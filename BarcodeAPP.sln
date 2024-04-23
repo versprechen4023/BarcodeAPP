@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34408.163
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generator", "BarcodeGenerator\Generator.csproj", "{98F1B1B5-9A5C-4DF0-94B6-801B3BDB21DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLCommon", "SQLCommon\SQLCommon.csproj", "{8F657245-FFC7-4EC3-B7F1-1EC36CC78583}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reader", "BarcodeReader\Reader.csproj", "{298EDBC7-4ED3-4A03-9F37-4805CDC1B844}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98F1B1B5-9A5C-4DF0-94B6-801B3BDB21DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98F1B1B5-9A5C-4DF0-94B6-801B3BDB21DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98F1B1B5-9A5C-4DF0-94B6-801B3BDB21DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98F1B1B5-9A5C-4DF0-94B6-801B3BDB21DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F657245-FFC7-4EC3-B7F1-1EC36CC78583}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F657245-FFC7-4EC3-B7F1-1EC36CC78583}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F657245-FFC7-4EC3-B7F1-1EC36CC78583}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F657245-FFC7-4EC3-B7F1-1EC36CC78583}.Release|Any CPU.Build.0 = Release|Any CPU
+		{298EDBC7-4ED3-4A03-9F37-4805CDC1B844}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{298EDBC7-4ED3-4A03-9F37-4805CDC1B844}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{298EDBC7-4ED3-4A03-9F37-4805CDC1B844}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{298EDBC7-4ED3-4A03-9F37-4805CDC1B844}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D6CBBD6A-99A8-4CBB-AAF0-40A19A51306C}
+	EndGlobalSection
+EndGlobal
