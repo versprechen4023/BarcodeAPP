@@ -90,14 +90,14 @@
 			// 
 			this.textProPrice.Location = new System.Drawing.Point(81, 64);
 			this.textProPrice.Name = "textProPrice";
-			this.textProPrice.Size = new System.Drawing.Size(177, 25);
+			this.textProPrice.Size = new System.Drawing.Size(177, 21);
 			this.textProPrice.TabIndex = 4;
 			// 
 			// textProName
 			// 
 			this.textProName.Location = new System.Drawing.Point(81, 37);
 			this.textProName.Name = "textProName";
-			this.textProName.Size = new System.Drawing.Size(177, 25);
+			this.textProName.Size = new System.Drawing.Size(177, 21);
 			this.textProName.TabIndex = 3;
 			// 
 			// btnCreate
@@ -115,7 +115,7 @@
 			this.lbProPrice.AutoSize = true;
 			this.lbProPrice.Location = new System.Drawing.Point(17, 67);
 			this.lbProPrice.Name = "lbProPrice";
-			this.lbProPrice.Size = new System.Drawing.Size(37, 15);
+			this.lbProPrice.Size = new System.Drawing.Size(29, 12);
 			this.lbProPrice.TabIndex = 1;
 			this.lbProPrice.Text = "가격";
 			// 
@@ -124,7 +124,7 @@
 			this.lbProName.AutoSize = true;
 			this.lbProName.Location = new System.Drawing.Point(17, 40);
 			this.lbProName.Name = "lbProName";
-			this.lbProName.Size = new System.Drawing.Size(52, 15);
+			this.lbProName.Size = new System.Drawing.Size(41, 12);
 			this.lbProName.TabIndex = 0;
 			this.lbProName.Text = "상품명";
 			// 
@@ -145,6 +145,7 @@
 			this.pbBarcode.Location = new System.Drawing.Point(15, 20);
 			this.pbBarcode.Name = "pbBarcode";
 			this.pbBarcode.Size = new System.Drawing.Size(219, 125);
+			this.pbBarcode.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pbBarcode.TabIndex = 1;
 			this.pbBarcode.TabStop = false;
 			// 

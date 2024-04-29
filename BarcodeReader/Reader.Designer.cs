@@ -88,6 +88,7 @@
 			this.pbBarcode.Location = new System.Drawing.Point(6, 55);
 			this.pbBarcode.Name = "pbBarcode";
 			this.pbBarcode.Size = new System.Drawing.Size(375, 365);
+			this.pbBarcode.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pbBarcode.TabIndex = 0;
 			this.pbBarcode.TabStop = false;
 			// 

@@ -16,6 +16,7 @@ using OpenCvSharp.Extensions;
 using SQLCommon;
 using ZXing;
 using ZXing.Presentation;
+using System.IO;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
 using Excel = Microsoft.Office.Interop.Excel;
 using SaveFileDialog = System.Windows.Forms.SaveFileDialog; // 줄임처리
@@ -143,6 +144,22 @@ namespace Reader
 		}
 
 		/// <summary>
+		/// 바코드 인식 범위 표시
+		/// </summary>
+		/// <param name="result"></param>
+		/// <param name="mat"></param>
+		/// <returns></returns>
+		private Bitmap BoundROILine (Result result, Mat mat)
+		{
+			// 바코드 인식 좌표 값 가져오기
+			var barcodePoints = result.ResultPoints;
+			// 이미지에 선그리기
+			Cv2.Line(mat, new OpenCvSharp.Point((int)result.ResultPoints[0].X, (int)result.ResultPoints[0].Y), new OpenCvSharp.Point((int)result.ResultPoints[1].X, (int)result.ResultPoints[1].Y), Scalar.Red, 2, LineTypes.Link4);
+
+			return mat.ToBitmap();
+
+		}
+		/// <summary>
 		/// 영상인식 비동기 처리를 위한 백그라운드 워커
 		/// </summary>
 		/// <param name="sender"></param>
@@ -162,7 +179,7 @@ namespace Reader
 				using (Mat mat = new Mat())
 				{
 					// 영상처리 무한 루프 진입
-					while(IsRunning == true)
+					while(IsRunning)
 					{
 						// 카메라에 캡쳐된 이미지를 읽어냄
 						capture.Read(mat);
@@ -176,6 +193,7 @@ namespace Reader
 							// 바코드 리더 옵션 로드
 							ZXing.BarcodeReader reader = ZxingReaderOption();
 
+							// 바코드 해독 실시
 							Result result = reader.Decode(mat.ToBitmap());
 
 							// 바코드 해독에 성공한 경우 ProgressChanged 이벤트 발생
@@ -198,8 +216,26 @@ namespace Reader
 			// 워커에서 넘겨받은 결과값 변수에 할당
 			Result result = e.UserState as Result;
 
+			// 이미지 데이터를 안전하게 가져오기위해 메모리 스트림 사용
+			using (MemoryStream ms = new MemoryStream())
+			{
+				// 픽쳐박스로 부터 이미지를 가져옴
+				var oriImage = pbBarcode.Image;
+
+				// 메모리에 작성 및 이진 데이터 가져오기
+				oriImage.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+				var imageData = ms.ToArray();
+
+				// Mat데이터 가져옴
+				var mat = Mat.FromImageData(imageData);
+
+				// 바코드 인식 범위 표시
+				pbBarcode.Image = BoundROILine(result, mat);
+			}
+
 			// 전역 변수에 바코드 해독 결과 값 할당
 			proNo = result.Text;
+
 		}
 
 		private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -276,19 +312,40 @@ namespace Reader
 
 				if(openFileDialog.ShowDialog() == DialogResult.OK)
 				{
-					// 사용자가 업로드 한 이미지 픽쳐박스에 할당
-					pbBarcode.Image = Image.FromFile(openFileDialog.FileName);
+					// 이미지 처리를 위한 변수 선언
+					var oriImage = Image.FromFile(openFileDialog.FileName);
+
+					Bitmap bitmap = new Bitmap(oriImage);
 
 					// 바코드 리더 옵션 로드
 					ZXing.BarcodeReader reader = ZxingReaderOption();
 
 					// 이미지 해독 실행
-					var result = reader.Decode(pbBarcode.Image as Bitmap);
+					var result = reader.Decode(bitmap);
 
-					// 정상적으로 해독된경우 상품목록 정보 업데이트
+					// 정상적으로 해독된경우 상품목록 정보 업데이트 및 인식 범위 표시
 					if(result != null)
 					{
+						// 이미지 데이터를 안전하게 가져오기위해 메모리 스트림 사용
+						using(MemoryStream ms = new MemoryStream())
+						{
+							// 메모리에 작성 및 이진 데이터 가져오기
+							oriImage.Save(ms, oriImage.RawFormat);
+							var imageData = ms.ToArray();
+
+							// Mat데이터 가져옴
+							var mat = Mat.FromImageData(imageData);
+
+							// 바코드 인식 범위 표시
+							pbBarcode.Image = BoundROILine(result, mat);
+						}
+						// 인식된 상품목록 업데이트
 						UpDateProList(result.Text);
+					}
+					else
+					{
+						// 인식 되지 않았을경우 그냥 이미지 표시
+						pbBarcode.Image = oriImage;
 					}
 				}
 			}
