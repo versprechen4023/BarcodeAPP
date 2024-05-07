@@ -44,6 +44,7 @@
 			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.gbProList = new System.Windows.Forms.GroupBox();
+			this.btnSaveAllBarcode = new System.Windows.Forms.Button();
 			this.gbSQL.SuspendLayout();
 			this.gbBarcode.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbBarcode)).BeginInit();
@@ -130,6 +131,7 @@
 			// 
 			// gbBarcode
 			// 
+			this.gbBarcode.Controls.Add(this.btnSaveAllBarcode);
 			this.gbBarcode.Controls.Add(this.pbBarcode);
 			this.gbBarcode.Controls.Add(this.btnSaveBarcode);
 			this.gbBarcode.Location = new System.Drawing.Point(301, 12);
@@ -151,7 +153,7 @@
 			// 
 			// btnSaveBarcode
 			// 
-			this.btnSaveBarcode.Location = new System.Drawing.Point(70, 151);
+			this.btnSaveBarcode.Location = new System.Drawing.Point(15, 151);
 			this.btnSaveBarcode.Name = "btnSaveBarcode";
 			this.btnSaveBarcode.Size = new System.Drawing.Size(109, 33);
 			this.btnSaveBarcode.TabIndex = 0;
@@ -202,6 +204,16 @@
 			this.gbProList.TabStop = false;
 			this.gbProList.Text = "상품 목록";
 			// 
+			// btnSaveAllBarcode
+			// 
+			this.btnSaveAllBarcode.Location = new System.Drawing.Point(130, 151);
+			this.btnSaveAllBarcode.Name = "btnSaveAllBarcode";
+			this.btnSaveAllBarcode.Size = new System.Drawing.Size(104, 33);
+			this.btnSaveAllBarcode.TabIndex = 2;
+			this.btnSaveAllBarcode.Text = "바코드 일괄저장";
+			this.btnSaveAllBarcode.UseVisualStyleBackColor = true;
+			this.btnSaveAllBarcode.Click += new System.EventHandler(this.btnSaveAllBarcode_Click);
+			// 
 			// Generator
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -241,6 +253,7 @@
 		private System.Windows.Forms.GroupBox gbProList;
 		private System.Windows.Forms.Button btnDelete;
 		private System.Windows.Forms.Button btnUpdate;
+		private System.Windows.Forms.Button btnSaveAllBarcode;
 	}
 }
 

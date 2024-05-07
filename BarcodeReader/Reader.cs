@@ -70,12 +70,14 @@ namespace Reader
 		/// 바코드에 인식된 상품목록 업데이트 함수
 		/// </summary>
 		/// <param name="proNo"></param>
-		private void UpDateProList(string proNo)
+		private void UpdateProList(string proNo)
 		{
 			try
 			{
 				// db에 접근해 해당되는 상품의 정보를 가져옴
 				var proData = db.GetProductNo(proNo);
+
+				if (proData == null) { MessageBox.Show("해당하는 상품정보가 데이터베이스에 없습니다"); return; }
 
 				// 리스트 뷰에 상품정보 업데이트
 				ListViewItem item = new ListViewItem();
@@ -151,8 +153,6 @@ namespace Reader
 		/// <returns></returns>
 		private Bitmap BoundROILine (Result result, Mat mat)
 		{
-			// 바코드 인식 좌표 값 가져오기
-			var barcodePoints = result.ResultPoints;
 			// 이미지에 선그리기
 			Cv2.Line(mat, new OpenCvSharp.Point((int)result.ResultPoints[0].X, (int)result.ResultPoints[0].Y), new OpenCvSharp.Point((int)result.ResultPoints[1].X, (int)result.ResultPoints[1].Y), Scalar.Red, 2, LineTypes.Link4);
 
@@ -243,14 +243,14 @@ namespace Reader
 			// 작업이 완전히 완료되면 리스트뷰 목록 업데이트
 			if (!string.IsNullOrEmpty(proNo))
 			{
-				UpDateProList(proNo);
+				UpdateProList(proNo);
 			}
 
 			btnStart.Enabled = true;
 			btnStop.Enabled = false;
 
 			// 상품번호 초기화
-			proNo = null;
+			proNo = string.Empty;
 		}
 
 		/// <summary>
@@ -340,7 +340,7 @@ namespace Reader
 							pbBarcode.Image = BoundROILine(result, mat);
 						}
 						// 인식된 상품목록 업데이트
-						UpDateProList(result.Text);
+						UpdateProList(result.Text);
 					}
 					else
 					{
@@ -398,49 +398,62 @@ namespace Reader
 				// 다이얼로그 로드시 최초로 보여주는 저장위치(C드라이브)
 				saveFileDialog.InitialDirectory = @"C:\";
 				// 초기 저장이름
-				saveFileDialog.FileName = "prolist.xls";
+				saveFileDialog.FileName = "prolist.xlsx";
 				// 파일 필터
-				saveFileDialog.Filter = "엑셀 파일 (*.xls)|*.xls";
+				saveFileDialog.Filter = "엑셀 파일 (*.xlsx)|*.xlsx";
 				// 파일명 유효성 검증
 				saveFileDialog.ValidateNames = true;
 
 				// 사용자가 저장위치를 선택하면 엑셀화 시작
 				if (saveFileDialog.ShowDialog() == DialogResult.OK)
 				{
-					// 객체 생성
-					Excel.Application app = new Excel.Application();
-					Workbook wb = app.Workbooks.Add(XlSheetType.xlWorksheet);
-					Worksheet ws = app.ActiveSheet as Worksheet;
+					_ = GenerateExcelFile(saveFileDialog.FileName);
+				}
+			}
+		}
 
-					// 엑셀창 안보이기
-					app.Visible = false;
+		/// <summary>
+		/// 엑셀저장 처리 비동기
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <returns></returns>
+		private async Task GenerateExcelFile(string filePath)
+		{
+			await Task.Run(() =>
+			{
+				// 객체 생성
+				Excel.Application app = new Excel.Application();
+				Workbook wb = app.Workbooks.Add(XlSheetType.xlWorksheet);
+				Worksheet ws = app.ActiveSheet as Worksheet;
 
-					// 리스트뷰의 컬럼제목을 엑셀파일에쓰기
-					for (var i = 0; i < lvProList.Columns.Count; i++)
-					{
-						ws.Cells[1, i + 1] = lvProList.Columns[i].Text;
-					}
+				// 엑셀창 안보이기
+				app.Visible = false;
 
-					// 리스트뷰의 각 행을 엑셀 파일에 쓰기
-					for (var i = 0; i < lvProList.Items.Count; i++)
-					{
-						for (var j = 0; j < lvProList.Items[i].SubItems.Count; j++)
-						{
-							ws.Cells[i + 2, j + 1] = lvProList.Items[i].SubItems[j].Text;
-						}
-					}
-
-					// 엑셀 파일저장 인자 값은 다음과 같음 파일명, 파일형식, 암호, 수정제한파일저장암호, 읽기전용(false), 백업생성(false), 엑세스모드(기본값), 충돌제어(중간에 데이터 변경될경우 우선저장)
-					wb.SaveAs(saveFileDialog.FileName, XlFileFormat.xlWorkbookDefault, Type.Missing, Type.Missing, false, false, XlSaveAsAccessMode.xlNoChange, XlSaveConflictResolution.xlLocalSessionChanges);
-
-					// 종료
-					wb.Close();
-					app.Quit();
-
-					MessageBox.Show("엑셀 파일이 저장되었습니다");
+				// 리스트뷰의 컬럼제목을 엑셀파일에쓰기
+				for (var i = 0; i < lvProList.Columns.Count; i++)
+				{
+					ws.Cells[1, i + 1] = lvProList.Columns[i].Text;
 				}
 
-			}
+				// 리스트뷰의 각 행을 엑셀 파일에 쓰기
+				for (var i = 0; i < lvProList.Items.Count; i++)
+				{
+					for (var j = 0; j < lvProList.Items[i].SubItems.Count; j++)
+					{
+						ws.Cells[i + 2, j + 1] = lvProList.Items[i].SubItems[j].Text;
+					}
+				}
+
+				// 엑셀 파일저장 인자 값은 다음과 같음 파일명, 파일형식, 암호, 수정제한파일저장암호, 읽기전용(false), 백업생성(false), 엑세스모드(기본값), 충돌제어(중간에 데이터 변경될경우 우선저장)
+				wb.SaveAs(filePath, XlFileFormat.xlWorkbookDefault, Type.Missing, Type.Missing, false, false, XlSaveAsAccessMode.xlNoChange, XlSaveConflictResolution.xlLocalSessionChanges);
+
+				// 종료
+				wb.Close();
+				app.Quit();
+
+				MessageBox.Show("엑셀 파일이 저장되었습니다");
+			});
+			
 		}
 	}
 }

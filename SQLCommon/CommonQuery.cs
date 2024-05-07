@@ -34,9 +34,9 @@ namespace SQLCommon
         /// 전체 상품 정보를 가져온다
         /// </summary>
         /// <returns></returns>
-        public List<Product> GetAllProducts() 
-        { 
-            return db.Products.ToList();
+        public List<Product> GetAllProducts()
+        {
+            try { return db.Products.ToList(); } catch(Exception) { return null; }
         }
 
         /// <summary>
@@ -48,9 +48,13 @@ namespace SQLCommon
         /// <returns></returns>
         public bool PutProduct(string proNo, string proName, int proPrice)
         {
-            db.Products.Add(new Product {ProNo = proNo, ProName = proName, ProPrice = proPrice });
+            try
+            {
+				db.Products.Add(new Product { ProNo = proNo, ProName = proName, ProPrice = proPrice });
 
-            return db.SaveChanges() > 0;
+				return db.SaveChanges() > 0;
+			}
+            catch(Exception) { return false; }
         }
 
         /// <summary>
@@ -60,12 +64,15 @@ namespace SQLCommon
         /// <returns></returns>
         public bool DeleteProduct(string proNo)
         {
-            var result = db.Products.FirstOrDefault(p => p.ProNo == proNo);
+            try
+            {
+				var result = db.Products.FirstOrDefault(p => p.ProNo == proNo);
 
-            db.Products.Remove(result);
+				db.Products.Remove(result);
 
-            return db.SaveChanges() > 0;
-
+				return db.SaveChanges() > 0;
+			}
+			catch(Exception) { return false; }
 		}
 
         /// <summary>
@@ -77,13 +84,16 @@ namespace SQLCommon
         /// <returns></returns>
         public bool UpdateProduct(string proNo, string proName, int proPrice)
         {
-			var result = db.Products.FirstOrDefault(p => p.ProNo == proNo);
+            try
+            {
+				var result = db.Products.FirstOrDefault(p => p.ProNo == proNo);
 
-            result.ProName = proName;
-            result.ProPrice = proPrice;
+				result.ProName = proName;
+				result.ProPrice = proPrice;
 
-			return db.SaveChanges() > 0;
-
+				return db.SaveChanges() > 0;
+			}
+			catch(Exception) { return false; }
 		}
 
 		/// <summary>
@@ -92,7 +102,8 @@ namespace SQLCommon
 		/// <returns></returns>
 		public Product GetProductNo(string proNo)
 		{
-			return db.Products.FirstOrDefault(p => p.ProNo == proNo);
+            try { return db.Products.FirstOrDefault(p => p.ProNo == proNo); } catch(Exception) { return null; }
+
 		}
 
         /// <summary>
@@ -101,7 +112,7 @@ namespace SQLCommon
         /// <returns></returns>
 		public Product GetProductNo()
 		{
-			return db.Products.OrderByDescending(p => p.ProNo).FirstOrDefault();
+			try { return db.Products.OrderByDescending(p => p.ProNo).FirstOrDefault(); } catch (Exception) { return null; }
 		}
 	}
 }
