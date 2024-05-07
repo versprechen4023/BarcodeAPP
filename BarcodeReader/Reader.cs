@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.Office.Interop.Excel;
-using DirectShowLib;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
 using SQLCommon;
 using ZXing;
 using System.IO;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
-using Excel = Microsoft.Office.Interop.Excel;
 using SaveFileDialog = System.Windows.Forms.SaveFileDialog; // 줄임처리
 
 
@@ -61,99 +55,6 @@ namespace Reader
 
 		}
 
-		/// <summary>
-		/// 바코드에 인식된 상품목록 업데이트 함수
-		/// </summary>
-		/// <param name="proNo"></param>
-		private void UpdateProList(string proNo)
-		{
-			try
-			{
-				// db에 접근해 해당되는 상품의 정보를 가져옴
-				var proData = db.GetProductNo(proNo);
-
-				if (proData == null) { MessageBox.Show("해당하는 상품정보가 데이터베이스에 없습니다"); return; }
-
-				// 리스트 뷰에 상품정보 업데이트
-				ListViewItem item = new ListViewItem();
-				item.Text = proData.ProNo;
-				item.SubItems.Add(proData.ProName);
-				item.SubItems.Add(proData.ProPrice.ToString());
-
-				lvProList.Items.Add(item);
-
-				// 항상 상품목록 가장 마지막이 선택되게 함
-				if (lvProList.Items.Count > 0)
-				{
-					lvProList.TopItem = lvProList.Items[lvProList.Items.Count - 1];
-				}
-			}
-			catch (Exception)
-			{
-				// db 에러 발생시 프로그램 종료
-				MessageBox.Show("데이터 베이스에 연결 할 수 없습니다 프로그램을 종료합니다");
-				Close();
-			}
-
-		}
-
-		/// <summary>
-		/// ZXING 바코드 리더 설정 함수
-		/// </summary>
-		/// <returns></returns>
-		private ZXing.BarcodeReader ZxingReaderOption()
-		{
-			ZXing.BarcodeReader reader = new ZXing.BarcodeReader
-			{
-				Options = new ZXing.Common.DecodingOptions
-				{
-					// 조금더 높은 정확도로 디코드 시도
-					TryHarder = true,
-					// 읽어 내지 못하는경우 흑색반전해서 인식 디코드 정확성은 높아지나 속도 저하
-					TryInverted = true,
-					// CODE 128 형태의 바코드만 인식하게 하여 속도와 정확성 증가
-					PossibleFormats = new[] { BarcodeFormat.CODE_128 }.ToList()
-				}
-			};
-
-			return reader;
-		}
-
-		/// <summary>
-		/// 카메라 목록 호출 함수
-		/// </summary>
-		/// <returns></returns>
-		private List<String> GetCameraList()
-		{
-			// 디바이스 데이터를 가져온다
-			var devices = new List<DsDevice>(DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice));
-
-			// 카메라명을 담기위한 변수
-			List<string> cameraList = new List<string>();
-
-			// 콤보박스에 카메라명 추가
-			foreach (var list in devices)
-			{
-				cameraList.Add(list.Name);
-			}
-
-			return cameraList;
-		}
-
-		/// <summary>
-		/// 바코드 인식 범위 표시
-		/// </summary>
-		/// <param name="result"></param>
-		/// <param name="mat"></param>
-		/// <returns></returns>
-		private Bitmap BoundROILine (Result result, Mat mat)
-		{
-			// 이미지에 선그리기
-			Cv2.Line(mat, new OpenCvSharp.Point((int)result.ResultPoints[0].X, (int)result.ResultPoints[0].Y), new OpenCvSharp.Point((int)result.ResultPoints[1].X, (int)result.ResultPoints[1].Y), Scalar.Red, 2, LineTypes.Link4);
-
-			return mat.ToBitmap();
-
-		}
 		/// <summary>
 		/// 영상인식 비동기 처리를 위한 백그라운드 워커
 		/// </summary>
@@ -405,50 +306,6 @@ namespace Reader
 					_ = GenerateExcelFile(saveFileDialog.FileName);
 				}
 			}
-		}
-
-		/// <summary>
-		/// 엑셀저장 처리 비동기
-		/// </summary>
-		/// <param name="filePath"></param>
-		/// <returns></returns>
-		private async Task GenerateExcelFile(string filePath)
-		{
-			await Task.Run(() =>
-			{
-				// 객체 생성
-				Excel.Application app = new Excel.Application();
-				Workbook wb = app.Workbooks.Add(XlSheetType.xlWorksheet);
-				Worksheet ws = app.ActiveSheet as Worksheet;
-
-				// 엑셀창 안보이기
-				app.Visible = false;
-
-				// 리스트뷰의 컬럼제목을 엑셀파일에쓰기
-				for (var i = 0; i < lvProList.Columns.Count; i++)
-				{
-					ws.Cells[1, i + 1] = lvProList.Columns[i].Text;
-				}
-
-				// 리스트뷰의 각 행을 엑셀 파일에 쓰기
-				for (var i = 0; i < lvProList.Items.Count; i++)
-				{
-					for (var j = 0; j < lvProList.Items[i].SubItems.Count; j++)
-					{
-						ws.Cells[i + 2, j + 1] = lvProList.Items[i].SubItems[j].Text;
-					}
-				}
-
-				// 엑셀 파일저장 인자 값은 다음과 같음 파일명, 파일형식, 암호, 수정제한파일저장암호, 읽기전용(false), 백업생성(false), 엑세스모드(기본값), 충돌제어(중간에 데이터 변경될경우 우선저장)
-				wb.SaveAs(filePath, XlFileFormat.xlWorkbookDefault, Type.Missing, Type.Missing, false, false, XlSaveAsAccessMode.xlNoChange, XlSaveConflictResolution.xlLocalSessionChanges);
-
-				// 종료
-				wb.Close();
-				app.Quit();
-
-				MessageBox.Show("엑셀 파일이 저장되었습니다");
-			});
-			
 		}
 	}
 }

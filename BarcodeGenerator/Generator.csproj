@@ -78,11 +78,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Generator.Core.cs">
+      <DependentUpon>Generator.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Generator.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Generator.Designer.cs">
       <DependentUpon>Generator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Generator.ZXing.cs">
+      <DependentUpon>Generator.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
