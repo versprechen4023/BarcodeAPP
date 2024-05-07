@@ -202,7 +202,7 @@ namespace Generator
 			try
 			{
 				// 상품목록이 없으면 에러 출력
-				if (lvProList.Items.Count < 0) { MessageBox.Show("저장할 바코드 이미지가 없습니다"); return; }
+				if (lvProList.Items.Count == 0) { MessageBox.Show("저장할 바코드 이미지가 없습니다"); return; }
 
 				// 저장을 위한 파일 다이얼로그 생성
 				using (SaveFileDialog saveFileDialog = new SaveFileDialog())
